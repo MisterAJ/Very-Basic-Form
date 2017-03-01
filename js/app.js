@@ -1,9 +1,23 @@
-// Validate email address
+//  Set focus on the first text field
 
-
-//  TODO Set focus on the first text field
+window.onload = function () {
+    $('#name').focus();
+    $('#other').addClass("hide");
+};
 
 //  TODO ”Job Role” section of the form
+
+$('#title').on('change', function () {
+    let $elm = $(this).children('option:selected');
+
+    if ($elm.attr('value') === 'other') {
+        $('#other').removeClass("hide");
+    }
+    if ($elm.attr('value') !== 'other') {
+        $('#other').addClass("hide");
+    }
+
+});
 
 //  TODO Only show available shirt colors
 
@@ -32,18 +46,24 @@ $('.activities input').on("click", function () {
 
 // Payment Info section of the form
 
-// TODO The "Credit Card" payment option should be selected by default, display the #credit-card div, and hide the "Paypal" and "Bitcoin information.
-// TODO When a user selects the "PayPal" payment option, the Paypal information should display, and the credit card and “Bitcoin” information should be hidden.
+// The "Credit Card" payment option should be selected by default, display the #credit-card div, and hide the "Paypal" and "Bitcoin information.
+// When a user selects the "PayPal" payment option, the Paypal information should display, and the credit card and “Bitcoin” information should be hidden.
 
 $('#payment').on("change", function () {
     let $elm = $(this).children('option:selected');
 
     if($elm.attr('value') === 'paypal'){
         $('#credit-card').addClass('hide');
+        $('#bitcoin').addClass('hide')
+        $('#paypal').removeClass('hide')
     } if($elm.attr('value') === 'bitcoin'){
         $('#credit-card').addClass('hide');
+        $('#paypal').addClass('hide')
+        $('#bitcoin').removeClass('hide')
     } if($elm.attr('value') === 'credit card'){
         $('#credit-card').removeClass('hide');
+        $('#paypal').addClass('hide')
+        $('#bitcoin').addClass('hide')
     }
 });
 
@@ -68,3 +88,8 @@ $('#payment').on("change", function () {
 There should be an error indication for the name field, email field, “Register for Activities” checkboxes, credit card number, zip code, and CVV
 */
 
+// TODO Hide the "Color" label and select menu until a T-Shirt design is selected from the "Design" menu
+
+/* TODO Program at least one of your error messages so that more information is provided depending on the error. For example, if the user hasn’t entered a credit card number and the field is completely blank, the error message reads “Please enter a credit card number.” If the field isn’t empty but contains only 10 numbers, the error message reads “Please enter a number that is at least 16 digits long.”*/
+
+// TODO Program your form so that it provides a real-time validation error message for at least one text input field. Rather than providing an error message on submit, your form should check for errors and display messages as the user begins typing inside a text field. For example, if the user enters an invalid email address, the error appears as the user begins to type, and disappears as soon as the user has entered a complete and correctly formatted email address.
