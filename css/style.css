@@ -195,3 +195,12 @@ button:hover {
 .hide {
     visibility: hidden;
 }
+
+.error {
+    background-color: lightcoral;
+}
+
+.textError {
+    color: red;
+    font-size: 1.25rem;
+}
