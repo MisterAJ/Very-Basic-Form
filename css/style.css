@@ -197,10 +197,12 @@ button:hover {
 }
 
 .error {
-    background-color: lightcoral;
+    background-color: #f00002;
+    opacity: 0.55;
 }
 
 .textError {
-    color: red;
+    color: #c22;
+    text-shadow: 0 1px 0 rgba(100, 50, 50, 0.45);
     font-size: 1.25rem;
 }
