@@ -1,3 +1,17 @@
+// Global Variables
+
+let valName = false;
+let valEMail = false;
+let valCourse = false;
+let valCCN = false;
+let valZip = false;
+let valCVV = false;
+
+let other;
+let money = 0;
+let paypal;
+let bitcoin;
+
 // Functions
 
 function isEmail(email) {
@@ -17,18 +31,26 @@ function isValidCVV(cvv) {
     return /^\d{3}(-\d{4})?$/.test(cvv);
 }
 
+function fullFormValidation() {
+    if (valName && valEMail && valCourse && valCCN && valZip && valCVV) {
+        $('#submitButton').removeClass('hide');
+        $('#validated').remove();
+    }
+}
+
 //  Set focus on the first text field
 
 window.onload = function () {
     $('#name').focus();
     $(".activities").after('<p id="checkBoxRequired" class="textError">*You Must Select at least One Option*</p>');
-    $('#other').addClass("hide");
+    other = $('#other').remove();
     $('#cc').attr('selected', 'selected');
-    $('#paypal').addClass('hide');
-    $('#bitcoin').addClass('hide');
+    paypal = $('#paypal').remove();
+    bitcoin = $('#bitcoin').remove();
     $('#submitButton').addClass('hide');
 
     // Extra Credit - Hide the "Color" label and select menu until a T-Shirt design is selected from the "Design" menu
+
     $('#colors-js-puns').addClass('hide')
 };
 
@@ -38,12 +60,11 @@ $('#title').on('change', function () {
     let $elm = $(this).children('option:selected');
 
     if ($elm.attr('value') === 'other') {
-        $('#other').removeClass("hide");
+        $('#title').after(other);
     }
     if ($elm.attr('value') !== 'other') {
-        $('#other').addClass("hide");
+        $('#other').remove();
     }
-
 });
 
 //  Only show available shirt colors
@@ -54,15 +75,14 @@ $("#design").on("change", function () {
     $('#colors-js-puns').removeClass('hide')
 
     if ($elm.attr("value") === 'js puns') {
-        $('.punsShirt').removeClass('hide').attr('selected', "selected");
-        $('.heartShirt').addClass('hide').removeAttr('selected');
+        $('.punsShirt').attr('disabled', false).attr('selected', "selected");
+        $('.heartShirt').attr('disabled', true).removeAttr('selected');
     }
     if ($elm.attr("value") === 'heart js') {
-        $('.punsShirt').addClass('hide').removeAttr('selected');
-        $('.heartShirt').removeClass('hide').attr('selected', "selected");
+        $('.punsShirt').attr('disabled', true).removeAttr('selected');
+        $('.heartShirt').attr('disabled', false).attr('selected', "selected");
     }
 });
-
 
 //  Block out courses with conflicting times
 
@@ -75,15 +95,26 @@ $('.activities input').on("click", function () {
     if(!$elm.prop("checked")) {
         $(elmArr).attr("disabled", false);
         $elm.attr("disabled", false);
+        if ($elm.attr('id') === "mainConf") {
+            money -= 200;
+        } else {
+            money -= 100;
+        }
     }
 
     if($elm.prop("checked")) {
         $(elmArr).attr("disabled", true);
         $elm.attr("disabled", false);
+        if ($elm.attr('id') === "mainConf") {
+            money += 200;
+        } else {
+            money += 100;
+        }
     }
+    $("#cost").remove();
+    $(".activities").append("<p id='cost'>Total cost: $" + money + "</p>");
 
 });
-
 
 // Payment Info section of the form
 
@@ -91,20 +122,18 @@ $('#payment').on("change", function () {
     let $elm = $(this).children('option:selected');
 
     if($elm.attr('value') === 'paypal'){
-        $('#credit-card').addClass('hide');
-        $('#bitcoin').addClass('hide');
-        $('#paypal').removeClass('hide');
+        $('#credit-card').addClass('hide').after(paypal);
+        $('#bitcoin').remove();
         $('#credit-card').attr('disabled', true);
     } if($elm.attr('value') === 'bitcoin'){
-        $('#credit-card').addClass('hide');
-        $('#paypal').addClass('hide');
-        $('#bitcoin').removeClass('hide');
+        $('#credit-card').addClass('hide').after(bitcoin);
+        $('#paypal').remove();
         $('#credit-card').attr('disabled', true);
     } if($elm.attr('value') === 'credit card'){
         $('#credit-card').attr('disabled', false);
         $('#credit-card').removeClass('hide');
-        $('#paypal').addClass('hide');
-        $('#bitcoin').addClass('hide')
+        $('#paypal').remove();
+        $('#bitcoin').remove();
     }
 });
 
@@ -120,10 +149,13 @@ $('#name').on('focusout', function () {
         $('#nameError').remove();
         $elm.addClass('error');
         $elm.after('<p id="nameError" class="textError">Invalid Name - Too Short</p>');
+        valName = false;
     }
     if ($elm.val().length >= 2) {
         $elm.removeClass('error');
         $('#nameError').remove();
+        valName = true;
+        fullFormValidation()
     }
 });
 
@@ -137,32 +169,35 @@ $('#mail').on('focusout', function () {
         $('#mailError').remove();
         $elm.addClass('error');
         $elm.after('<p id="mailError" class="textError">Invalid Email Address</p>');
-        console.log('in the if')
+        valEMail = false;
     }
     if (isEmail($elm.val())) {
         $elm.removeClass('error');
         $('#mailError').remove();
+        valEMail = true;
+        fullFormValidation()
     }
 
 
 });
 
-//  TODO - a Least one Checkbox
+//  At Least one Checkbox
 
 $(".activities").change(function () {
     let boxArray = $(".activities input:checked");
     if (boxArray.length === 0) {
         $('#submitButton').addClass('hide');
-        $('#checkBoxRequired').removeClass('hide')
+        $('#checkBoxRequired').removeClass('hide');
+        valCourse = false;
     }
     if ($(".activities input:checked").length > 0) {
-        $('#submitButton').removeClass('hide');
         $('#checkBoxRequired').addClass('hide')
+        valCourse = true;
+        fullFormValidation();
     }
 });
 
-
-//  TODO - Credit card needs 13-16 digits
+//  Credit card needs 13-16 digits
 
 $('#cc-num').on('focusout', function () {
     let $elm = $(this);
@@ -172,15 +207,18 @@ $('#cc-num').on('focusout', function () {
         $('#ccError').remove();
         $elm.addClass('error');
         $elm.after('<p id="ccError" class="textError">Invalid Credit Card</p>');
-        console.log('in the if')
+        console.log('in the if');
+        valCCN = false
     }
     if (isValidCC($elm.val())) {
         $elm.removeClass('error');
         $('#ccError').remove();
+        valCCN = true;
+        fullFormValidation();
     }
 });
 
-//  TODO - zip code 5 digits
+//  Zip code 5 digits
 
 $('#zip').on('focusout', function () {
     let $elm = $(this);
@@ -191,15 +229,17 @@ $('#zip').on('focusout', function () {
         $elm.addClass('error');
         $elm.after('<p id="zipError" class="textError">Invalid ZipCode</p>');
         console.log('in the if')
+        valZip = false;
     }
     if (isValidUSZip($elm.val())) {
         $elm.removeClass('error');
         $('#zipError').remove();
+        valZip = true;
+        fullFormValidation();
     }
 });
 
-
-//  TODO - CVV 3 digits
+//  CVV 3 digits
 
 $('#cvv').on('focusout', function () {
     let $elm = $(this);
@@ -209,11 +249,15 @@ $('#cvv').on('focusout', function () {
         $('#cvvError').remove();
         $elm.addClass('error');
         $elm.after('<p id="cvvError" class="textError">Invalid CVV</p>');
-        console.log('in the if')
+        valCVV = false;
     }
     if (isValidCVV($elm.val())) {
         $elm.removeClass('error');
         $('#cvvError').remove();
+        valCVV = true;
+        fullFormValidation();
     }
 });
+
+
 
